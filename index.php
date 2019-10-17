@@ -1,5 +1,6 @@
-<?php session_start();?>
+<?php session_start(); ?>
 <?php require_once('includes/connection.php'); ?>
+<?php require_once('includes/functions.php'); ?>
 <?php 
 
 	// check for form submission
@@ -31,23 +32,30 @@
 
 			$result_set = mysqli_query($connection, $query);
 
-			if ($result_set) {
+			verify_query($result_set);
 				// query succesfful
 
 				if (mysqli_num_rows($result_set) == 1) {
 					// valid user found
-					$user = mysqli_fetch_array($result_set);
-					$_SESSION['User_Id'] = $user['id'];
+					$user = mysqli_fetch_assoc($result_set);
+					$_SESSION['user_id'] = $user['id'];
 					$_SESSION['first_name'] = $user['first_name'];
+					
+					//checking the login time n date
+					$query = "UPDATE ums_tb SET last_login = NOW()";
+					$query .= "WHERE id= {$_SESSION['user_id']}";
+
+					$result_set = mysqli_query($connection, $query);
+
+					verify_query($result_set);
+					
 					// redirect to users.php
 					header('Location: users.php');
 				} else {
 					// user name and password invalid
 					$errors[] = 'Invalid Username / Password';
 				}
-			} else {
-				$errors[] = 'Database query failed';
-			}
+			
 		}
 	}
 ?>
@@ -72,6 +80,12 @@
 					}
 				?>
 
+				<?php 
+					if (isset($_GET['logout'])) {
+						echo '<p class="info">You have successfully logged out from the system</p>';
+					}
+				?>
+
 				<p>
 					<label for="">Username:</label>
 					<input type="text" name="email" id="" placeholder="Email Address">
@@ -91,6 +105,7 @@
 		</form>		
 
 	</div> <!-- .login -->
+	<?php require_once('includes/footer.php');?>
 </body>
 </html>
 <?php mysqli_close($connection); ?>
