@@ -35,6 +35,12 @@ p.error{
     padding: 10px;
 }
 
+p.info{
+    background:green; 
+    color: white;
+    padding: 10px;
+}
+
 header{
     font-size: 20px;
      font: bold; 
@@ -49,4 +55,52 @@ header .appname{
 
 header .loggedin{
     float: right;
+}
+
+main{
+    width: 600px;
+    margin: 30px auto;
+    
+}
+
+main h1{
+    margin-bottom: 20px;
+    font-size: 40px;
+}
+
+main h1 span{
+    font-size: 20px;
+}
+
+table.masterlist{
+    width: 100px;
+    border-collapse: collapse;
+}
+
+table.masterlist th{
+    background: gray;
+    font-size: 20px;
+}
+
+table.masterlist th, table.masterlist td{
+    padding: 10px;
+    border-bottom: 1px solid black;
+}
+
+table.masterlist td{
+    font-size: 15px;
+}
+
+form.userform label{
+   width: 200px;
+   float:  left;
+   font-size: 15px;
+}
+
+form.userform input{
+    width: 60%;
+}
+
+form.userform button{
+    width: 60px;
 }
