@@ -104,3 +104,9 @@ form.userform input{
 form.userform button{
     width: 60px;
 }
+
+.errmsgs{
+    background-color: red;
+    font-size: 20px;
+    margin: 20px 20px;
+}
