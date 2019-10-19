@@ -7,7 +7,8 @@
     <title>footer.php</title>
 </head>
 <body>
+    <hr>
     <center>HashDev1.0 | 2019/2020 | All rights received | UMS </center>
-    
+    <hr>
 </body>
 </html>
