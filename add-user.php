@@ -1,5 +1,6 @@
 <?php session_start(); ?>
 <?php require_once('includes/connection.php'); ?>
+<?php require_once('includes/functions.php'); ?>
 
 <?php 
 	// checking if a user is logged in
@@ -9,11 +10,24 @@
 
 	
  ?>
+    
+
 
  <?php
+    $first_name ='';
+    $last_name ='';
+    $email = '';
+    $password = '';
+    
+    
     //checking the fields are okay
     $errors = array();
     if(isset($_POST['submit'])){
+        //save the current entered values
+        $first_name =$_POST['first_name'];
+        $last_name =$_POST['last_name'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
        
 
         if(trim(empty($_POST['first_name']))){
@@ -40,6 +54,35 @@
                 $errors[] = $filed . " is required";
             }
          }*/
+
+         //checking the data length is correct
+         $max_length_field = array('first_name' => 50, 'last_name' => 50, 'email'=> 50, 'password'=>100);
+
+         foreach($max_length_field as $field => $max_length){
+            if(strlen(trim($_POST[$field])) > $max_length){
+                $errors[] = $field . " should be less than" . $max_length_field. " characters";
+            }
+         }
+
+         //checking the email address is valid
+         if(!is_email($_POST['email'])){
+              $errors[] ='Invalid email address...!!!'; 
+         }
+
+         //checking the entered email already exists
+
+         $email = mysqli_escape_string($connection, $_POST['email']);
+
+         $query = "SELECT * FROM ums_tb WHERE email ='{$email}' LIMIT 1";
+         $result_set = mysqli_query($connection, $query);
+
+         if($result_set){
+             if(mysqli_num_rows($result_set) == 1){
+                 $errors[] = 'The email address already exists..!!!';
+             }
+         }
+
+
 
     }
  
@@ -74,17 +117,17 @@
         <form action="add-user.php" class="userform" method="post">
             <p>
                 <label for="">First_name</label>
-                <input type="text" name=first_name >
+                <input type="text" name=first_name  <?php  echo "value =" .$first_name ?> >
             </p>
 
             <p>
                 <label for="">Last_name</label>
-                <input type="text" name="last_name" >
+                <input type="text" name="last_name" <?php  echo "value =" .$last_name ?>>
             </p>
 
             <p>
                 <label for="">E-mail address</label>
-                <input type="email" name="email" >
+                <input type="email" name="email" <?php  echo "value =" .$email ?>>
             </p>
 
             <p>
