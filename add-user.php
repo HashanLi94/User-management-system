@@ -82,6 +82,30 @@
              }
          }
 
+        //add a new user
+        if(empty($errors)){
+            $first_name = mysqli_real_escape_string($connection, $_POST['first_name']);
+            $last_name = mysqli_real_escape_string($connection, $_POST['last_name']);
+            $password = mysqli_escape_string($connection, $_POST['password']);
+
+            $hashed_password = sha1($password);
+
+            $query = "INSERT INTO ums_tb(first_name, last_name, email, password, is_deleted) VALUES('{$first_name}', '{$last_name}', '{$email}', '{$hashed_password}', 0)";
+
+            $result = mysqli_query($connection, $query);
+
+            if($result){
+                //redirect to users page
+                echo 'New user added successfully..!!!';
+                header('Location : users.php?added_new_user');
+                
+            }else{
+                $errors[] = 'User has not added...!!!';
+            }
+        }
+         
+
+
 
 
     }
