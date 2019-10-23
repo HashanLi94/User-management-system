@@ -8,165 +8,132 @@
 		header('Location: index.php');
 	}
 
-	
- ?>
-    
+	$errors = array();
+	$first_name = '';
+	$last_name = '';
+	$email = '';
+	$password = '';
+
+	if (isset($_POST['submit'])) {
+		
+		$first_name = $_POST['first_name'];
+		$last_name = $_POST['last_name'];
+		$email = $_POST['email'];
+		$password = $_POST['password'];
+
+		// checking required fields
+		$req_fields = array('first_name', 'last_name', 'email', 'password');
+		$errors = array_merge($errors, check_req_fields($req_fields));
+
+		// checking max length
+		$max_len_fields = array('first_name' => 50, 'last_name' =>100, 'email' => 100, 'password' => 40);
+		$errors = array_merge($errors, check_max_len($max_len_fields));
+
+		// checking email address
+		if (!is_email($_POST['email'])) {
+			$errors[] = 'Email address is invalid.';
+		}
+
+		// checking if email address already exists
+		$email = mysqli_real_escape_string($connection, $_POST['email']);
+		$query = "SELECT * FROM ums_tb WHERE email = '{$email}' LIMIT 1";
+
+		$result_set = mysqli_query($connection, $query);
+
+		if ($result_set) {
+			if (mysqli_num_rows($result_set) == 1) {
+				$errors[] = 'Email address already exists';
+			}
+		}
+
+		if (empty($errors)) {
+			// no errors found... adding new record
+			$first_name = mysqli_real_escape_string($connection, $_POST['first_name']);
+			$last_name = mysqli_real_escape_string($connection, $_POST['last_name']);
+			$password = mysqli_real_escape_string($connection, $_POST['password']);
+			// email address is already sanitized
+			$hashed_password = sha1($password);
+
+			$query = "INSERT INTO ums_tb ( ";
+			$query .= "first_name, last_name, email, password, is_deleted";
+			$query .= ") VALUES (";
+			$query .= "'{$first_name}', '{$last_name}', '{$email}', '{$hashed_password}', 0";
+			$query .= ")";
+
+			$result = mysqli_query($connection, $query);
+
+			if ($result) {
+				// query successful... redirecting to users page
+				header('Location: users.php?user_added=true');
+			} else {
+				$errors[] = 'Failed to add the new record.';
+			}
 
 
- <?php
-    $first_name ='';
-    $last_name ='';
-    $email = '';
-    $password = '';
-    
-    
-    //checking the fields are okay
-    $errors = array();
-    if(isset($_POST['submit'])){
-        //save the current entered values
-        $first_name =$_POST['first_name'];
-        $last_name =$_POST['last_name'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-       
-
-        if(trim(empty($_POST['first_name']))){
-              $errors[] = 'First name is required..!!!';
-        }
-
-        if(trim(empty($_POST['last_name']))){
-            $errors[] = 'Last_name required..!!!';
-        }
-
-        if(trim(empty($_POST['email']))){
-            $errors[] = 'email is required..!!!';
-        }
-
-        if(trim(empty($_POST['password']))){
-            $errors[] = 'Password is required..!!!';
-         }
-
-         //using foreach loop
-         /*$req_fields = array('first_name', 'last_name', 'email', 'password');
-
-         foreach($req_fields as $filed){
-            if(trim(empty($_POST['$filed']))){
-                $errors[] = $filed . " is required";
-            }
-         }*/
-
-         //checking the data length is correct
-         $max_length_field = array('first_name' => 50, 'last_name' => 50, 'email'=> 50, 'password'=>100);
-
-         foreach($max_length_field as $field => $max_length){
-            if(strlen(trim($_POST[$field])) > $max_length){
-                $errors[] = $field . " should be less than" . $max_length_field. " characters";
-            }
-         }
-
-         //checking the email address is valid
-         if(!is_email($_POST['email'])){
-              $errors[] ='Invalid email address...!!!'; 
-         }
-
-         //checking the entered email already exists
-
-         $email = mysqli_escape_string($connection, $_POST['email']);
-
-         $query = "SELECT * FROM ums_tb WHERE email ='{$email}' LIMIT 1";
-         $result_set = mysqli_query($connection, $query);
-
-         if($result_set){
-             if(mysqli_num_rows($result_set) == 1){
-                 $errors[] = 'The email address already exists..!!!';
-             }
-         }
-
-        //add a new user
-        if(empty($errors)){
-            $first_name = mysqli_real_escape_string($connection, $_POST['first_name']);
-            $last_name = mysqli_real_escape_string($connection, $_POST['last_name']);
-            $password = mysqli_escape_string($connection, $_POST['password']);
-
-            $hashed_password = sha1($password);
-
-            $query = "INSERT INTO ums_tb(first_name, last_name, email, password, is_deleted) VALUES('{$first_name}', '{$last_name}', '{$email}', '{$hashed_password}', 0)";
-
-            $result = mysqli_query($connection, $query);
-
-            if($result){
-                //redirect to users page
-                echo 'New user added successfully..!!!';
-                header('Location : users.php?added_new_user');
-                
-            }else{
-                $errors[] = 'User has not added...!!!';
-            }
-        }
-         
+		}
 
 
 
+	}
 
-    }
- 
- ?>
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Add-New-Users</title>
+	<title>Add New User</title>
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 	<header>
 		<div class="appname">User Management System</div>
-		<div class="loggedin">Welcome <?php echo $_SESSION['first_name']; ?> <a href="logout.php">Log Out</a></div>
+		<div class="loggedin">Welcome <?php echo $_SESSION['first_name']; ?>! <a href="logout.php">Log Out</a></div>
 	</header>
 
 	<main>
-        <h1>Add New User<span><a href="users.php">< back to Users</a></span></h1>
+		<h1>Add New User<span> <a href="users.php">< Back to User List</a></span></h1>
 
-        <?php
-            if(!empty($errors)){
-                echo '<div class = "errmsgs">';
-                echo "<b>There was an error in the filling.</b> <br>";
-                foreach($errors as $error){
-                    echo "-". $error ."<br>";
-                }
-                echo '</div>';
-            }
-        ?>
-        
-        <form action="add-user.php" class="userform" method="post">
-            <p>
-                <label for="">First_name</label>
-                <input type="text" name=first_name  <?php  echo "value =" .$first_name ?> >
-            </p>
+		<?php 
 
-            <p>
-                <label for="">Last_name</label>
-                <input type="text" name="last_name" <?php  echo "value =" .$last_name ?>>
-            </p>
+			if (!empty($errors)) {
+				display_errors($errors);
+			}
 
-            <p>
-                <label for="">E-mail address</label>
-                <input type="email" name="email" <?php  echo "value =" .$email ?>>
-            </p>
+		 ?>
 
-            <p>
-                <label for="">Passowrd</label>
-                <input type="password" name="password">
+		<form action="add-user.php" method="post" class="userform">
+			
+			<p>
+				<label for="">First Name:</label>
+				<input type="text" name="first_name" <?php echo 'value="' . $first_name . '"'; ?>>
+			</p>
 
-            <p>
-                <label for="">&nbsp;</label>
-                <button type="submit" name="submit">Save</button>
-            </p>
-        </form>
+			<p>
+				<label for="">Last Name:</label>
+				<input type="text" name="last_name" <?php echo 'value="' . $last_name . '"'; ?>>
+			</p>
+
+			<p>
+				<label for="">Email Address:</label>
+				<input type="text" name="email" <?php echo 'value="' . $email . '"'; ?>>
+			</p>
+
+			<p>
+				<label for="">New Password:</label>
+				<input type="password" name="password">
+			</p>
+
+			<p>
+				<label for="">&nbsp;</label>
+				<button type="submit" name="submit">Save</button>
+			</p>
+
+		</form>
 
 		
-    </main>
-    <?php require_once('includes/footer.php');?>
-	
+		
+	</main>
 </body>
 </html>
