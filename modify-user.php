@@ -113,7 +113,7 @@
 	</header>
 
 	<main>
-		<h1>View / Modify User<span> <a href="users.php">< Back to User List</a></span></h1>
+		<h1><img src="img\Login.png" alt="" height="80px" width="80px"> Modify a User<span> <a href="users.php">< Back to User List</a></span></h1>
 
 		<?php 
 
@@ -154,6 +154,8 @@
 
 		
 		
-	</main>
+    </main>
+    <?php require_once('includes/footer.php'); ?>
+
 </body>
 </html>
