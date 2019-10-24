@@ -1,6 +1,8 @@
 <?php session_start(); ?>
 <?php require_once('includes/connection.php'); ?>
 <?php require_once('includes/functions.php'); ?>
+
+
 <?php 
 
 	// check for form submission
@@ -72,7 +74,7 @@
 		<form action="index.php" method="post">
 			
 			<fieldset>
-				<legend><h1>Log In</h1></legend>
+				<legend><img src="img\single-man-hi.png" alt="" width="150px" height="150px"></legend>
 
 				<?php 
 					if (isset($errors) && !empty($errors)) {
