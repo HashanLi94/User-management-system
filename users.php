@@ -39,11 +39,11 @@
 <body>
 	<header>
 		<div class="appname">User Management System</div>
-		<div class="loggedin">Welcome <?php echo $_SESSION['first_name']; ?>! <a href="logout.php">Log Out</a></div>
+		<div class="loggedin">  Welcome <?php echo $_SESSION['first_name']; ?>! <a href="logout.php">Log Out</a></div>
 	</header>
 
 	<main>
-		<h1>Users<span><a href="add-user.php">+Add_New</a></span></h1>
+		<h1><img src="img\Login.png" alt="" height="100px"> Users<span><a href="add-user.php">+Add_New</a></span></h1>
 
 		<table class="masterlist">
 			<tr>
