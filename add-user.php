@@ -93,7 +93,7 @@
 	</header>
 
 	<main>
-		<h1>Add New User<span> <a href="users.php">< Back to User List</a></span></h1>
+		<h1><img src="img\Login.png" alt="" height="100px"> Add New User<span> <a href="users.php">< Back to User List</a></span></h1>
 
 		<?php 
 
@@ -134,6 +134,8 @@
 
 		
 		
-	</main>
+    </main>
+    <?php require_once('includes/footer.php'); ?>
+
 </body>
 </html>
