@@ -142,7 +142,7 @@
 
 			<p>
 				<label for="">Password:</label>
-				<span>******</span> | <a href="change-password.php">Change Password</a>
+				<span>******</span> | <a href="change-password.php?user_id=<?php echo $user_id;?>">Change Password</a>
 			</p>
 
 			<p>
@@ -154,7 +154,11 @@
 
 		
 		
-    </main>
+	</main>
+	<br>
+	<br>
+	<br>
+	<br>
     <?php require_once('includes/footer.php'); ?>
 
 </body>
