@@ -39,54 +39,50 @@
 
 	if (isset($_POST['submit'])) {
 		$user_id = $_POST['user_id'];
-		$first_name = $_POST['first_name'];
-		$last_name = $_POST['last_name'];
-		$email = $_POST['email'];
-
+		$password =	$_POST['password'];
 		// checking required fields
-		$req_fields = array('user_id', 'first_name', 'last_name', 'email');
+		$req_fields = array('user_id', 'password');
 		$errors = array_merge($errors, check_req_fields($req_fields));
 
 		// checking max length
-		$max_len_fields = array('first_name' => 50, 'last_name' =>100, 'email' => 100);
+		$max_len_fields = array('password' => 100);
 		$errors = array_merge($errors, check_max_len($max_len_fields));
 
-		// checking email address
-		if (!is_email($_POST['email'])) {
-			$errors[] = 'Email address is invalid.';
-		}
+		// // checking email address
+		// if (!is_email($_POST['email'])) {
+		// 	$errors[] = 'Email address is invalid.';
+		// }
 
-		// checking if email address already exists
-		$email = mysqli_real_escape_string($connection, $_POST['email']);
-		$query = "SELECT * FROM ums_tb WHERE email = '{$email}' AND id != {$user_id} LIMIT 1";
+		// // checking if email address already exists
+		// $email = mysqli_real_escape_string($connection, $_POST['email']);
+		// $query = "SELECT * FROM ums_tb WHERE email = '{$email}' AND id != {$user_id} LIMIT 1";
 
-		$result_set = mysqli_query($connection, $query);
+		// $result_set = mysqli_query($connection, $query);
 
-		if ($result_set) {
-			if (mysqli_num_rows($result_set) == 1) {
-				$errors[] = 'Email address already exists';
-			}
-		}
+		// if ($result_set) {
+		// 	if (mysqli_num_rows($result_set) == 1) {
+		// 		$errors[] = 'Email address already exists';
+		// 	}
+		// }
 
 		if (empty($errors)) {
 			// no errors found... adding new record
-			$first_name = mysqli_real_escape_string($connection, $_POST['first_name']);
-			$last_name = mysqli_real_escape_string($connection, $_POST['last_name']);
+			$password = mysqli_real_escape_string($connection, $_POST['password']);
+			$hashed_password = sha1($password);
+			// $last_name = mysqli_real_escape_string($connection, $_POST['last_name']);
 			// email address is already sanitized
 
 			$query = "UPDATE ums_tb SET ";
-			$query .= "first_name = '{$first_name}', ";
-			$query .= "last_name = '{$last_name}', ";
-			$query .= "email = '{$email}' ";
+			$query .= "password = '{$hashed_password}' ";
 			$query .= "WHERE id = {$user_id} LIMIT 1";
 
 			$result = mysqli_query($connection, $query);
 
 			if ($result) {
 				// query successful... redirecting to users page
-				header('Location: users.php?user_modified=true');
+				header('Location: users.php?password_changed=true');
 			} else {
-				$errors[] = 'Failed to modify the record.';
+				$errors[] = 'Failed to update the password.';
 			}
 
 
@@ -103,7 +99,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>View / Modify User</title>
+	<title>Change-passsword</title>
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -123,38 +119,55 @@
 
 		 ?>
 
-		<form action="modify-user.php" method="post" class="userform">
+		<form action="change-password.php" method="post" class="userform">
 			<input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
 			<p>
 				<label for="">First Name:</label>
-				<input type="text" name="first_name" <?php echo 'value="' . $first_name . '"'; ?>>
+				<input type="text" name="first_name" <?php echo 'value="' . $first_name . '"'; ?> disabled>
 			</p>
 
 			<p>
 				<label for="">Last Name:</label>
-				<input type="text" name="last_name" <?php echo 'value="' . $last_name . '"'; ?>>
+				<input type="text" name="last_name" <?php echo 'value="' . $last_name . '"'; ?> disabled>
 			</p>
 
 			<p>
 				<label for="">Email Address:</label>
-				<input type="text" name="email" <?php echo 'value="' . $email . '"'; ?>>
+				<input type="text" name="email" <?php echo 'value="' . $email . '"'; ?> disabled>
 			</p>
 
 			<p>
-				<label for="">Password:</label>
-				<span>******</span> | <a href="change-password.php">Change Password</a>
+				<label for="">New Password:</label>
+				 <input type="password" name="password" id="password" >
+			</p>
+
+			<p>
+				<label for="">Show the password</label>
+				<input type="checkbox" name="showpassword" id="showpassword"  style="width :20px; height:20px;" >
 			</p>
 
 			<p>
 				<label for="">&nbsp;</label>
-				<button type="submit" name="submit">Save</button>
+				<button type="submit" name="submit">Update </button>
 			</p>
 
 		</form>
 
 		
 		
-    </main>
+	</main>
+	<script src="js/jquery.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('#showpassword').click(function(){
+				if($('#showpassword').is(':checked')){
+					$('#password').attr('type', 'text');
+				}else{
+					$('#password').attr('type', 'password');
+				}
+			});
+		});
+	</script>
     <?php require_once('includes/footer.php'); ?>
 
 </body>
